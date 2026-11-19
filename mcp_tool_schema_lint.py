@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Offline, bounded linter for captured MCP tools/list snapshots."""
 import json
+import math
 import sys
 
 MAX_BYTES = 256 * 1024
@@ -12,6 +13,17 @@ JSON_TYPES = {"object", "array", "string", "number", "integer", "boolean", "null
 
 class InputError(Exception):
     pass
+
+
+def finite_float(raw):
+    value = float(raw)
+    if not math.isfinite(value):
+        raise InputError("non_finite_number")
+    return value
+
+
+def reject_constant(_value):
+    raise InputError("non_finite_number")
 
 
 def unique_pairs(pairs):
@@ -159,7 +171,8 @@ def main():
     if len(raw) > MAX_BYTES:
         return fail("input_too_large")
     try:
-        document = json.loads(raw.decode("utf-8"), object_pairs_hook=unique_pairs)
+        document = json.loads(raw.decode("utf-8"), object_pairs_hook=unique_pairs,
+                              parse_constant=reject_constant, parse_float=finite_float)
         walk_depth(document)
         result = inspect(document)
     except (UnicodeDecodeError, json.JSONDecodeError):

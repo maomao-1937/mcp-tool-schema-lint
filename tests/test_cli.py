@@ -51,6 +51,13 @@ class SchemaLintTests(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertEqual(result.stdout, '{"error":"duplicate_json_key"}\n')
 
+    def test_non_finite_numbers_rejected(self):
+        for value in ("NaN", "1e400"):
+            with self.subTest(value=value):
+                result = run('{"tools":[{"name":"x","inputSchema":{"type":"object","enum":[' + value + ']}}]}')
+                self.assertEqual(result.returncode, 2)
+                self.assertEqual(result.stdout, '{"error":"non_finite_number"}\n')
+
     def test_size_cap(self):
         result = run(' ' * (256 * 1024 + 1))
         self.assertEqual(result.stdout, '{"error":"input_too_large"}\n')
