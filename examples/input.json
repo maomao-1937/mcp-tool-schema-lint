@@ -1,0 +1,20 @@
+{
+  "tools": [
+    {
+      "name": "lookup",
+      "description": "Find a record by key.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Record key."
+          }
+        },
+        "required": [
+          "key"
+        ]
+      }
+    }
+  ]
+}
